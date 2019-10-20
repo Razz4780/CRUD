@@ -8,9 +8,9 @@ Stored values are preserved after server shutdown and loaded to memory upon serv
 Working Go environment is needed to run this server (developed and tested with Go 1.12)
 
 ## Usage:
-1. Get: go get github.com/Razz4780/TWljaGHFgi1TbW9sYXJlaw
-2. Test: go test github.com/Razz4780/TWljaGHFgi1TbW9sYXJlaw...
-3. Run: go run github.com/Razz4780/TWljaGHFgi1TbW9sYXJlaw
+1. Get: go get github.com/Razz4780/CRUD
+2. Test: go test github.com/Razz4780/CRUD...
+3. Run: go run github.com/Razz4780/CRUD
 
 ## Endpoints:
 
