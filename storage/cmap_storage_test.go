@@ -24,13 +24,9 @@ func TestCmapStorage_Put(t *testing.T) {
 			dataStorage := NewCmapStorage()
 			dataStorage.Put(dataSet.key, dataSet.object, dataSet.contentType)
 
-			val, exists := dataStorage.values.Get(dataSet.key)
+			data, exists := dataStorage.values[dataSet.key]
 			if !exists {
 				t.Fatalf("key not present in storage")
-			}
-			data, ok := val.(Data)
-			if !ok {
-				t.Fatalf("stored value not of type Data")
 			}
 			if !exists {
 				t.Fatalf("key not present in storage")
@@ -41,7 +37,7 @@ func TestCmapStorage_Put(t *testing.T) {
 			if dataSet.contentType != data.ContentType {
 				t.Fatalf("stored content type differs: %v", data.ContentType)
 			}
-			if len(dataStorage.values.Keys()) != 1 {
+			if len(dataStorage.values) != 1 {
 				t.Fatalf("storage size not equal to 1 after 1 put operation")
 			}
 		})
@@ -55,13 +51,13 @@ func TestCmapStorage_Put(t *testing.T) {
 		dataStorage.Put(key1, []byte{}, "")
 		dataStorage.Put(key2, []byte{}, "")
 
-		if len(dataStorage.values.Keys()) != 2 {
+		if len(dataStorage.values) != 2 {
 			t.Fatalf("invalid storage size")
 		}
-		if !dataStorage.values.Has(key1) {
+		if _, exists := dataStorage.values[key1]; !exists {
 			t.Fatalf("first key not present")
 		}
-		if !dataStorage.values.Has(key2) {
+		if _, exists := dataStorage.values[key2]; !exists {
 			t.Fatalf("second key not present")
 		}
 	})
@@ -75,14 +71,13 @@ func TestCmapStorage_Put(t *testing.T) {
 		dataStorage.Put(key, []byte{}, "")
 		dataStorage.Put(key, object, contentType)
 
-		if len(dataStorage.values.Keys()) != 1 {
+		if len(dataStorage.values) != 1 {
 			t.Fatalf("invalid storage size")
 		}
-		val, exists := dataStorage.values.Get(key)
+		data, exists := dataStorage.values[key]
 		if !exists {
 			t.Fatal("key not present")
 		} else {
-			data := val.(Data)
 			if data.ContentType != contentType {
 				t.Errorf("stored content type differs: %v", data.ContentType)
 			}
@@ -99,7 +94,7 @@ func TestCmapStorage_Get(t *testing.T) {
 	key := "key"
 	data := Data{[]byte{}, ""}
 
-	dataStorage.values.Set(key, data)
+	dataStorage.values[key] = data
 
 	extractedData, err := dataStorage.Get(key)
 	if err != nil {
@@ -122,12 +117,12 @@ func TestCmapStorage_Delete(t *testing.T) {
 		t.Fatalf("delete operation did not fail")
 	}
 
-	dataStorage.values.Set(key, Data{[]byte{}, ""})
+	dataStorage.values[key] = Data{[]byte{}, ""}
 	err := dataStorage.Delete(key)
 	if err != nil {
 		t.Fatalf("delete operation failed")
 	}
-	if !dataStorage.values.IsEmpty() {
+	if len(dataStorage.values) != 0 {
 		t.Fatalf("storage not empty")
 	}
 }
@@ -141,7 +136,7 @@ func TestCmapStorage_Keys(t *testing.T) {
 
 	keys := []string{"key1", "key2", "key3"}
 	for _, key := range keys {
-		dataStorage.values.Set(key, Data{[]byte{}, ""})
+		dataStorage.values[key] = Data{[]byte{}, ""}
 	}
 
 	extractedKeys := dataStorage.Keys()
